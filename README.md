@@ -4,6 +4,9 @@
 
 The Book Search Engine is a React-based application that allows users to search for their favorite books and manage a personal library. Leveraging the power of Google Books API, it offers a seamless and interactive way to find detailed information about a wide range of books, including authors, descriptions, and more.
 
+##Screen Shots
+
+
 ## Features
 
 - **Search Functionality**: Users can search for books using titles, authors, or keywords.
@@ -32,7 +35,6 @@ The Book Search Engine is a React-based application that allows users to search 
    Navigate to the project directory and install the required dependencies:
    ```
    npm install
-   npm run start 
    ```
 
 3. **Start the Application**  
