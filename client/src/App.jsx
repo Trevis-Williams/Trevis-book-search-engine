@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './components/Navbar';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql', // Replace with your Apollo server URI
+  uri: 'http://localhost:3001/graphql', // Replace with your Apollo server URI
   cache: new InMemoryCache(),
 });
 
