@@ -16,6 +16,9 @@
   "devDependencies": {
     "concurrently": "^5.1.0"
   },
+  "engines": {
+    "node": "18.17.1"
+  },
   "dependencies": {
     "@apollo/client": "^3.8.8",
     "@apollo/server": "^4.9.5",
