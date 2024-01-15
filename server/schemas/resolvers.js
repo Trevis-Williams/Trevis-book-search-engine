@@ -1,68 +1,71 @@
-const { User, Thought } = require('../models');
-const { signToken, AuthenticationError } = require('../utils/auth');
+const { User } = require('../models');
+const { signToken } = require('../utils/auth');
 
 const resolvers = {
   Query: {
-    getSingleUser: async function(parent, args, context) {
-      const foundUser = await User.findOne({
-        username: args.username ,
-      });
-  
-      if (!foundUser) {
-        throw AuthenticationError;
+    me: async (parent, args, context) => {
+      if (context.user) {
+        return await User.findOne({ _id: context.user._id });
       }
-  
-      return (foundUser);
+      return null;
     },
   },
-
   Mutation: {
-    createUser: async function(parent, args, context) {
-      const user = await User.create(args);
-  
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ $or: [{ username: email }, { email }] });
       if (!user) {
-        throw AuthenticationError;
+        throw new Error("Can't find this user");
       }
-      const token = signToken(user);
-      return({ token, user });
-    },
-    login: async function(parent, args, context) {
-      const user = await User.findOne({ $or: [{ username: args.username }, { email: args.email }] });
-      if (!user) {
-        throw AuthenticationError;
-      }
-  
-      const correctPw = await user.isCorrectPassword(args.password);
-  
+
+      const correctPw = await user.isCorrectPassword(password);
       if (!correctPw) {
-        throw AuthenticationError;
+        throw new Error('Wrong password!');
       }
+
       const token = signToken(user);
-      return({ token, user });
+      return { token, user };
     },
-     saveBook: async function(parent, args, context) {
+    addUser: async (parent, args) => {
+      const user = await User.create(args);
+      if (!user) {
+        throw new Error('Something is wrong!');
+      }
+
+      const token = signToken(user);
+      return { token, user };
+    },
+    saveBook: async (parent, { bookData }, context) => {
+      if (!context.user) {
+        throw new Error('Authentication required');
+      }
+
       try {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $addToSet: { savedBooks: args } },
+          { $addToSet: { savedBooks: bookData } },
           { new: true, runValidators: true }
         );
-        return (updatedUser);
+        return updatedUser;
       } catch (err) {
         console.log(err);
-        throw AuthenticationError;
+        throw new Error('Error saving book');
       }
     },
-    deleteBook: async function(parent, args, context) {
+    removeBook: async (parent, { bookId }, context) => {
+      if (!context.user) {
+        throw new Error('Authentication required');
+      }
+
       const updatedUser = await User.findOneAndUpdate(
         { _id: context.user._id },
-        { $pull: { savedBooks: { bookId: args.bookId } } },
+        { $pull: { savedBooks: { bookId } } },
         { new: true }
       );
+
       if (!updatedUser) {
-        throw AuthenticationError;
+        throw new Error("Couldn't find user with this id!");
       }
-      return (updatedUser);
+      return updatedUser;
     },
   },
 };
