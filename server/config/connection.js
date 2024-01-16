@@ -2,6 +2,6 @@ require("dotenv").config();
 
 const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://rst1426:irC6YFHqOwJi5vpc@cluster0.5k55w.mongodb.net/Book-engine?retryWrites=true&w=majority');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/googlebooks');
 
 module.exports = mongoose.connection;
